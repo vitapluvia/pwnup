@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+from builtins import input
+from io import open
 import sys
 
 try:
   from pwn import *
 except:
-  print "pwntools must be installed"
+  print("pwntools must be installed")
   sys.exit(1)
 
 VERSION = "v0.0.1"
@@ -71,18 +73,18 @@ def chooseClientType(host, port):
   v = options("Choose a type.", types)
   log.info("You Chose: {}".format(types[v]))
   if types[v] == "remote":
-    host = host or raw_input("host > ")
-    port = port or raw_input("port > ")
+    host = host or input("host > ")
+    port = port or input("port > ")
     return "r = remote('{}', {})".format(host, port)
   if types[v] == "local":
-    binary = raw_input("binary > ")
+    binary = input("binary > ")
     return "r = process('{}')".format(binary)
   if types[v] == "ssh":
-    host = host or raw_input("host > ")
-    port = port or raw_input("port > ")
-    user = raw_input("user > ")
-    password = raw_input("password > ")
-    cmd = raw_input("cmd > ")
+    host = host or input("host > ")
+    port = port or input("port > ")
+    user = input("user > ")
+    password = input("password > ")
+    cmd = input("cmd > ")
     sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
         host, user, password, int(port))
     sshCmd += "r = sh.run('{}')".format(cmd)
@@ -109,7 +111,7 @@ def getIOString(tup):
   if (ioType == 0):
     return r"  r.send({})".format(repr(value))
   else:
-      return r"  print r.recvuntil({})".format(repr(value[-LAST_BYTES:]))
+    return r"  print(r.recvuntil({}))".format(repr(value[-LAST_BYTES:]))
 
 def interact(connection, host, port):
   exec(connection)
@@ -128,7 +130,7 @@ def checkArgs():
   port = ""
   if len(sys.argv) > 1:
     if sys.argv[1] in ["-h", "--help"]:
-      print "Usage: pwnUp <host> <port>"
+      print("Usage: pwnUp <host> <port>")
       sys.exit(1)
   if len(sys.argv) > 2:
     host = sys.argv[1]
