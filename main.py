@@ -1,23 +1,47 @@
 #!/usr/bin/env python
+import sys
 
 try:
   from pwn import *
 except:
-  import sys
   print "pwntools must be installed"
   sys.exit(1)
 
-HOST = "google.com"
-PORT =  80
+##### STUB OUT WRITE & SEND #####
+OLD_WRITE = sys.stdout.write
+OLD_SEND = tube.send
+ALL_WRITES = []
+ALL_INPUTS = []
+
+def restoreWrite(): sys.stdout.write = OLD_WRITE
+def restoreInput(): tube.send = OLD_SEND
+
+def stubWrite():
+  def newWrite(v):
+    OLD_WRITE(v)
+    ALL_WRITES.append(v)
+
+  sys.stdout.write = newWrite
+
+def stubInput():
+  def newSend(tube, v):
+    OLD_SEND(tube, v)
+    ALL_INPUTS.append(v)
+
+  tube.send = newSend
+##############################
 
 FILENAME = "client.py"
 CLIENT_TYPE = "remote"
+HOST = "google.com"
+PORT =  80
+
 HEADER = "#!/usr/bin/env python"
 FILE_TEMPLATE = ""
 FILE_TEMPLATE += HEADER
 FILE_TEMPLATE += """
-from pwn import *
 
+from pwn import *
 {}
 
 def main():
@@ -34,7 +58,7 @@ interaction = r"""
 def chooseClientType():
   types = ["ssh", "remote", "local", "shell"]
   v = options("Choose a type.", types)
-  print "You chose: {}".format(types[v])
+  log.info("You Chose: {}".format(types[v]))
 
 def saveFile():
   client = open(FILENAME, "w")
@@ -43,12 +67,29 @@ def saveFile():
   client.write(contents)
   client.close()
 
+def stubIO():
+  stubWrite()
+  stubInput()
+
+def restoreIO():
+  restoreInput()
+  restoreWrite()
+
+def interact():
+  r = remote(HOST, PORT)
+  stubIO()
+  r.interactive()
+  restoreIO()
+  print ALL_INPUTS
+  print ALL_WRITES[1:]
+
+
 def main():
-  print "Running PwnUp v0.0.1"
+  log.info("Running PwnUp v0.0.1")
   chooseClientType()
+  interact()
   saveFile()
-  print "Client Written to {}".format(FILENAME)
-  print "Done."
+  log.info("Client Written to {}".format(FILENAME))
 
 if __name__ == "__main__":
   main()
