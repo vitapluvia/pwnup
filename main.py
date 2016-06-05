@@ -16,6 +16,10 @@ LAST_BYTES = 32
 # io_types: { stdin: 0, stdout: 1 }
 # ALL_IO contains tuples of (io_type, value)
 # -------------------------- #
+EOF_STR_READ = "Got EOF while reading in interactive"
+EOF_STR_SEND = "Got EOF while sending in interactive"
+EXIT_CODE_NOTE = " stopped with exit code "
+INTERRUPT = "] Interrupted\n"
 OLD_WRITE = sys.stdout.write
 OLD_SEND = tube.send
 ALL_IO = []
@@ -28,8 +32,12 @@ def restoreInput(): tube.send = OLD_SEND
 def stubWrite():
   def newWrite(v):
     OLD_WRITE(v)
-    ALL_IO.append((1, v))
-    ALL_WRITES.append(v)
+    if EOF_STR_READ not in v \
+      and EOF_STR_SEND not in v \
+      and INTERRUPT not in v \
+      and EXIT_CODE_NOTE not in v:
+      ALL_IO.append((1, v))
+      ALL_WRITES.append(v)
 
   sys.stdout.write = newWrite
 
@@ -105,13 +113,12 @@ def getIOString(tup):
 
 def interact(connection, host, port):
   exec(connection)
-  last = -1 if "process" not in connection else -3
   result = ""
   log.info("Press <Ctrl-D> to stop recording ...")
   stubIO()
   r.interactive()
   restoreIO()
-  for tup in ALL_IO[1:last]:
+  for tup in ALL_IO[1:]:
     result += "{}\n".format(getIOString(tup))
 
   return result
