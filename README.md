@@ -1,5 +1,7 @@
 # PwnUp
 
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
 ### Description:
 PwnUp is a quick scaffolding tool to help generate pwntools-based clients.
 
