@@ -14,6 +14,6 @@ This could be thought of as the `autoexpect` for pwntools.
 - [pwntools](https://github.com/Gallopsled/pwntools) or [binjitsu](https://github.com/binjitsu/binjitsu)
 
 ### Usage:
-- Simply run `./main.py` after cloning.  Optionally pass host & port if working with remote server.
+- Simply run `./pwnup.py` after cloning.  Optionally pass host & port if working with remote server.
 - Press `ctrl-d` or `ctrl-c` after recording is finished to dump a `client.py` file in the current directory.
 
