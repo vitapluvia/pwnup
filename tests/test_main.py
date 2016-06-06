@@ -1,7 +1,7 @@
 from pwn import *
 import pwn
 
-import pwnup
+from pwnup import pwnup
 
 def test_restoreWrite():
   pwnInstance = pwnup.PwnUp()

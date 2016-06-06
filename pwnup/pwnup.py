@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-from builtins import input
-from io import open
 import sys
 import pwn
 
-VERSION = "v0.0.1"
+import version
+
+try:
+  from pwn import *
+except Exception as e:
+  print("pwntools must be installed")
+  sys.exit(1)
 
 # Grab only the last N bytes instead of the exact match for recv's:
 LAST_BYTES = 32
@@ -69,25 +73,25 @@ class PwnUp():
     v = options("Choose a type.", types)
     log.info("You Chose: {}".format(types[v]))
     if types[v] == "remote":
-      host = host or input("host > ")
-      port = port or input("port > ")
+      host = host or raw_input("host > ")
+      port = port or raw_input("port > ")
       return "r = remote('{}', {})".format(host, port)
     if types[v] == "local":
-      binary = input("binary > ")
+      binary = raw_input("binary > ")
       return "r = process('{}')".format(binary)
     if types[v] == "ssh":
-      host = host or input("host > ")
-      port = port or input("port > ")
-      user = input("user > ")
-      password = input("password > ")
-      cmd = input("cmd > ")
+      host = host or raw_input("host > ")
+      port = port or raw_input("port > ")
+      user = raw_input("user > ")
+      password = raw_input("password > ")
+      cmd = raw_input("cmd > ")
       sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
           host, user, password, int(port))
       sshCmd += "r = sh.run('{}')".format(cmd)
       return sshCmd
 
   def saveFile(self, connection, interaction):
-    client = open(self.filename, "w", encoding="utf-8")
+    client = open(self.filename, "w")
     contents = unicode(FILE_TEMPLATE.format(connection, interaction))
     client.write(contents)
     client.close()
@@ -135,19 +139,16 @@ class PwnUp():
 
   def run(self):
     host, port = self.checkArgs()
-    log.info("Running PwnUp {}".format(VERSION))
+    log.info("Running PwnUp {}".format(version.__version__))
     connection = self.chooseClientType(host, port)
     interaction = self.interact(connection)
     self.saveFile(connection, interaction)
     log.info("Client Written to {}".format(self.filename))
 
 
-if __name__ == "__main__":
-  try:
-    from pwn import *
-  except:
-    print("pwntools must be installed")
-    sys.exit(1)
-
+def start():
   PwnUp().run()
+
+if __name__ == "__main__":
+  start()
 

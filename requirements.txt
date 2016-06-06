@@ -1,4 +1,1 @@
-future
-coverage
-python-coveralls
 pwntools
