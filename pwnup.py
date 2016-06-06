@@ -15,44 +15,18 @@ VERSION = "v0.0.1"
 LAST_BYTES = 32
 
 # - STUB OUT WRITE & SEND - #
-# io_types: { stdin: 0, stdout: 1 }
-# ALL_IO contains tuples of (io_type, value)
 # -------------------------- #
 EOF_STR_READ = "Got EOF while reading in interactive"
 EOF_STR_SEND = "Got EOF while sending in interactive"
 EXIT_CODE_NOTE = " stopped with exit code "
+CLOSED_SSH = " Closed SSH channel with "
 INTERRUPT = "] Interrupted\n"
 OLD_WRITE = sys.stdout.write
 OLD_SEND = tube.send
-ALL_IO = []
-ALL_WRITES = []
-ALL_INPUTS = []
 
-def restoreWrite(): sys.stdout.write = OLD_WRITE
-def restoreInput(): tube.send = OLD_SEND
-
-def stubWrite():
-  def newWrite(v):
-    OLD_WRITE(v)
-    if EOF_STR_READ not in v \
-      and EOF_STR_SEND not in v \
-      and INTERRUPT not in v \
-      and EXIT_CODE_NOTE not in v:
-      ALL_IO.append((1, v))
-      ALL_WRITES.append(v)
-
-  sys.stdout.write = newWrite
-
-def stubInput():
-  def newSend(tube, v):
-    OLD_SEND(tube, v)
-    ALL_IO.append((0, v))
-    ALL_INPUTS.append(v)
-
-  tube.send = newSend
-# -------------------------- #
+# - FILE CONSTANTS - #
+# ------------------ #
 FILENAME = "client.py"
-
 HEADER = "#!/usr/bin/env python"
 FILE_TEMPLATE = ""
 FILE_TEMPLATE += HEADER
@@ -66,84 +40,112 @@ def main():
 if __name__ == "__main__":
   main()
 """
-# -------------------------- #
 
-def chooseClientType(host, port):
-  types = ["ssh", "remote", "local"]
-  v = options("Choose a type.", types)
-  log.info("You Chose: {}".format(types[v]))
-  if types[v] == "remote":
-    host = host or input("host > ")
-    port = port or input("port > ")
-    return "r = remote('{}', {})".format(host, port)
-  if types[v] == "local":
-    binary = input("binary > ")
-    return "r = process('{}')".format(binary)
-  if types[v] == "ssh":
-    host = host or input("host > ")
-    port = port or input("port > ")
-    user = input("user > ")
-    password = input("password > ")
-    cmd = input("cmd > ")
-    sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
-        host, user, password, int(port))
-    sshCmd += "r = sh.run('{}')".format(cmd)
-    return sshCmd
+class PwnUp():
+  def __init__(self):
+    # io_types: { stdin: 0, stdout: 1 }
+    # self.all_io contains tuples of (io_type, value)
+    self.all_io = []
 
-def saveFile(connection, interaction, host, port):
-  client = open(FILENAME, "w")
-  contents = FILE_TEMPLATE.format(connection, interaction)
-  client.write(contents)
-  client.close()
+  def restoreWrite(self): sys.stdout.write = OLD_WRITE
+  def restoreInput(self): tube.send = OLD_SEND
 
-def stubIO():
-  stubWrite()
-  stubInput()
+  def stubWrite(self):
+    def newWrite(v):
+      OLD_WRITE(v)
+      if EOF_STR_READ not in v \
+        and EOF_STR_SEND not in v \
+        and INTERRUPT not in v \
+        and CLOSED_SSH not in v \
+        and EXIT_CODE_NOTE not in v:
+        self.all_io.append((1, v))
 
-def restoreIO():
-  restoreInput()
-  restoreWrite()
+    sys.stdout.write = newWrite
 
-def getIOString(tup):
-  ioType = tup[0]
-  value = tup[1]
+  def stubInput(self):
+    def newSend(tube, v):
+      OLD_SEND(tube, v)
+      self.all_io.append((0, v))
 
-  if (ioType == 0):
-    return r"  r.send({})".format(repr(value))
-  else:
-    return r"  print(r.recvuntil({}))".format(repr(value[-LAST_BYTES:]))
+    tube.send = newSend
 
-def interact(connection, host, port):
-  exec(connection)
-  result = ""
-  log.info("Press <Ctrl-D> to stop recording ...")
-  stubIO()
-  r.interactive()
-  restoreIO()
-  for tup in ALL_IO[1:]:
-    result += "{}\n".format(getIOString(tup))
+  def chooseClientType(self, host, port):
+    types = ["ssh", "remote", "local"]
+    v = options("Choose a type.", types)
+    log.info("You Chose: {}".format(types[v]))
+    if types[v] == "remote":
+      host = host or input("host > ")
+      port = port or input("port > ")
+      return "r = remote('{}', {})".format(host, port)
+    if types[v] == "local":
+      binary = input("binary > ")
+      return "r = process('{}')".format(binary)
+    if types[v] == "ssh":
+      host = host or input("host > ")
+      port = port or input("port > ")
+      user = input("user > ")
+      password = input("password > ")
+      cmd = input("cmd > ")
+      sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
+          host, user, password, int(port))
+      sshCmd += "r = sh.run('{}')".format(cmd)
+      return sshCmd
 
-  return result
+  def saveFile(self, connection, interaction):
+    client = open(FILENAME, "w", encoding="utf-8")
+    contents = unicode(FILE_TEMPLATE.format(connection, interaction))
+    client.write(contents)
+    client.close()
 
-def checkArgs():
-  host = ""
-  port = ""
-  if len(sys.argv) > 1:
-    if sys.argv[1] in ["-h", "--help"]:
-      print("Usage: pwnUp <host> <port>")
-      sys.exit(1)
-  if len(sys.argv) > 2:
-    host = sys.argv[1]
-    port = sys.argv[2]
-  return host, port
+  def stubIO(self):
+    self.stubWrite()
+    self.stubInput()
 
-def main():
-  host, port = checkArgs()
-  log.info("Running PwnUp {}".format(VERSION))
-  connection = chooseClientType(host, port)
-  interaction = interact(connection, host, port)
-  saveFile(connection, interaction, host, port)
-  log.info("Client Written to {}".format(FILENAME))
+  def restoreIO(self):
+    self.restoreInput()
+    self.restoreWrite()
+
+  def getIOString(self, tup):
+    ioType = tup[0]
+    value = tup[1]
+
+    if (ioType == 0):
+      return r"  r.send({})".format(repr(value))
+    else:
+      return r"  print(r.recvuntil({}))".format(repr(value[-LAST_BYTES:]))
+
+  def interact(self, connection):
+    exec(connection)
+    result = ""
+    log.info("Press <Ctrl-D> to stop recording ...")
+    self.stubIO()
+    r.interactive()
+    self.restoreIO()
+    for tup in self.all_io[1:]:
+      result += "{}\n".format(self.getIOString(tup))
+
+    return result
+
+  def checkArgs(self):
+    host = ""
+    port = ""
+    if len(sys.argv) > 1:
+      if sys.argv[1] in ["-h", "--help"]:
+        print("Usage: pwnUp <host> <port>")
+        sys.exit(1)
+    if len(sys.argv) > 2:
+      host = sys.argv[1]
+      port = sys.argv[2]
+    return host, port
+
+  def run(self):
+    host, port = self.checkArgs()
+    log.info("Running PwnUp {}".format(VERSION))
+    connection = self.chooseClientType(host, port)
+    interaction = self.interact(connection)
+    self.saveFile(connection, interaction)
+    log.info("Client Written to {}".format(FILENAME))
+
 
 if __name__ == "__main__":
-  main()
+  PwnUp().run()
