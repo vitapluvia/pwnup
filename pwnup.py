@@ -2,12 +2,7 @@
 from builtins import input
 from io import open
 import sys
-
-try:
-  from pwn import *
-except:
-  print("pwntools must be installed")
-  sys.exit(1)
+import pwn
 
 VERSION = "v0.0.1"
 
@@ -21,12 +16,9 @@ EOF_STR_SEND = "Got EOF while sending in interactive"
 EXIT_CODE_NOTE = " stopped with exit code "
 CLOSED_SSH = " Closed SSH channel with "
 INTERRUPT = "] Interrupted\n"
-OLD_WRITE = sys.stdout.write
-OLD_SEND = tube.send
 
 # - FILE CONSTANTS - #
 # ------------------ #
-FILENAME = "client.py"
 HEADER = "#!/usr/bin/env python"
 FILE_TEMPLATE = ""
 FILE_TEMPLATE += HEADER
@@ -46,13 +38,16 @@ class PwnUp():
     # io_types: { stdin: 0, stdout: 1 }
     # self.all_io contains tuples of (io_type, value)
     self.all_io = []
+    self.oldWrite = sys.stdout.write
+    self.oldSend = pwn.tube.send
+    self.filename = "client.py"
 
-  def restoreWrite(self): sys.stdout.write = OLD_WRITE
-  def restoreInput(self): tube.send = OLD_SEND
+  def restoreWrite(self): sys.stdout.write = self.oldWrite
+  def restoreInput(self): pwn.tube.send = self.oldSend
 
   def stubWrite(self):
     def newWrite(v):
-      OLD_WRITE(v)
+      self.oldWrite(v)
       if EOF_STR_READ not in v \
         and EOF_STR_SEND not in v \
         and INTERRUPT not in v \
@@ -64,10 +59,10 @@ class PwnUp():
 
   def stubInput(self):
     def newSend(tube, v):
-      OLD_SEND(tube, v)
+      self.oldSend(tube, v)
       self.all_io.append((0, v))
 
-    tube.send = newSend
+    pwn.tube.send = newSend
 
   def chooseClientType(self, host, port):
     types = ["ssh", "remote", "local"]
@@ -92,7 +87,7 @@ class PwnUp():
       return sshCmd
 
   def saveFile(self, connection, interaction):
-    client = open(FILENAME, "w", encoding="utf-8")
+    client = open(self.filename, "w", encoding="utf-8")
     contents = unicode(FILE_TEMPLATE.format(connection, interaction))
     client.write(contents)
     client.close()
@@ -144,8 +139,15 @@ class PwnUp():
     connection = self.chooseClientType(host, port)
     interaction = self.interact(connection)
     self.saveFile(connection, interaction)
-    log.info("Client Written to {}".format(FILENAME))
+    log.info("Client Written to {}".format(self.filename))
 
 
 if __name__ == "__main__":
+  try:
+    from pwn import *
+  except:
+    print("pwntools must be installed")
+    sys.exit(1)
+
   PwnUp().run()
+

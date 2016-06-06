@@ -1,4 +1,5 @@
 client.py
 __pycache__
 .coverage
+.cache
 *.pyc
