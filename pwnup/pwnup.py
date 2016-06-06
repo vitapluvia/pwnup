@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import sys
-import pwn
-
 import version
 
 try:
+  import pwn
   from pwn import *
 except Exception as e:
-  print("pwntools must be installed")
+  print("pwntools must be installed: pip install pwntools")
   sys.exit(1)
 
 # Grab only the last N bytes instead of the exact match for recv's:
@@ -73,18 +72,18 @@ class PwnUp():
     v = options("Choose a type.", types)
     log.info("You Chose: {}".format(types[v]))
     if types[v] == "remote":
-      host = host or raw_input("host > ")
-      port = port or raw_input("port > ")
+      host = host or raw_input("host > ") or "localhost"
+      port = port or raw_input("port > ") or "4444"
       return "r = remote('{}', {})".format(host, port)
     if types[v] == "local":
-      binary = raw_input("binary > ")
+      binary = raw_input("binary > ") or "ls"
       return "r = process('{}')".format(binary)
     if types[v] == "ssh":
-      host = host or raw_input("host > ")
-      port = port or raw_input("port > ")
-      user = raw_input("user > ")
-      password = raw_input("password > ")
-      cmd = raw_input("cmd > ")
+      host = host or raw_input("host > ") or "localhost"
+      port = port or raw_input("port > ") or 22
+      user = raw_input("user > ") or ""
+      password = raw_input("password > ") or ""
+      cmd = raw_input("cmd > ") or "ls"
       sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
           host, user, password, int(port))
       sshCmd += "r = sh.run('{}')".format(cmd)
