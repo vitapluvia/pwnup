@@ -28,7 +28,7 @@ setup(
     ],
     keywords='pwn security automation cli clients',
     packages=find_packages(exclude=['tests']),
-    # install_requires=['pyserial', 'pwntools'],
+    install_requires=['pyserial', 'pwntools'],
     entry_points={
         'console_scripts': [
             'pwnup=pwnup.pwnup:start',
