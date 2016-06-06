@@ -4,9 +4,13 @@
 
 ### Installation:
 
-```pip install pwntools```
-```pip install pwnup```
+```
+pip install pwntools
+```
 
+```
+pip install pwnup
+```
 
 ### Description:
 
