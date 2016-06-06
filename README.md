@@ -8,6 +8,13 @@
 
 `pip install pwnup`
 
+### Usage:
+
+- Run `pwnup` (optionally pass host & port if working with a remote server.)
+- Select type of client
+- After finished interacting, press `ctrl-d`/`ctrl-c` to end the session.
+- It will drop a `client.py` file in the current directory.
+
 ### Description:
 
 pwnup is a quick scaffolding tool to help generate pwntools-based clients.
@@ -19,9 +26,3 @@ This could be thought of as the `autoexpect` for pwntools.
 ### Requirements:
 - [Python](https://www.python.org/)
 - [pwntools](https://github.com/Gallopsled/pwntools) or [binjitsu](https://github.com/binjitsu/binjitsu)
-
-### Usage:
-
-- Simply run `pwnup` optionally pass host & port if working with a remote server.
-- Press `ctrl-d` or `ctrl-c` after recording interactive session.
-- Once finished, it will drop a `client.py` file in the current directory.
