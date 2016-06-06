@@ -4,8 +4,6 @@
 
 ### Installation:
 
-`pip install pwntools`
-
 `pip install pwnup`
 
 ### Usage:
