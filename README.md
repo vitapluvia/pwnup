@@ -22,6 +22,6 @@ This could be thought of as the `autoexpect` for pwntools.
 
 ### Usage:
 
-- Simply run `pwnup` optionally pass host & port if working with remote server.
+- Simply run `pwnup` optionally pass host & port if working with a remote server.
 - Press `ctrl-d` or `ctrl-c` after recording interactive session.
 - Once finished, it will drop a `client.py` file in the current directory.
