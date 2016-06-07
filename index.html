@@ -2,10 +2,8 @@
 <head>
   <title>The autoexpect of pwntools</title>
   <meta name="description" content="The autoexpect of pwntools" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
   <style>
     body {
       background: #EFEFEF;
@@ -15,6 +13,8 @@
       padding-top: 12px;
       text-align: center;
       margin: 0 auto;
+    }
+    .sticky {
     }
     .table-of-contents {
       margin-top: 200px;
@@ -26,13 +26,24 @@
       position: fixed;
     }
     .content {
+      margin-bottom: 700px;
+    }
+    .content, .pwnup-logo {
       margin-top: 40px;
       margin-left: 190px;
-      margin-bottom: 700px;
     }
     h4 {
       font-weight: 600;
     }
+		h5:hover::before {
+			content: ">";
+			position: absolute;
+      font-weight: 600;
+      font-size: 10px;
+			padding: 0 .2em;
+			margin-left: -1.5em;
+			color: #333;
+		}
     p {
       background: #DEDEDE;
       border-radius: 4px;
@@ -51,35 +62,65 @@
 <body>
 
 <ul class="section table-of-contents animated fadeIn">
-  <li><a href="#intro">Introduction</a></li>
-  <li><a href="#examples">Examples</a></li>
-  <li><a href="#install">Install</a></li>
-  <li><a href="#source">Source Code</a></li>
+  <li><a class="intro active" href="#intro">Introduction</a></li>
+  <li><a class="examples" href="#examples">Examples</a></li>
+  <li><a class="install" href="#install">Install</a></li>
+  <li><a class="source" href="#source">Source Code</a></li>
 </ul>
 
 <div class="container valign-wrapper">
 </div>
-<div class="content">
+<header>
   <img src="./pwnup.png" class="pwnup-logo animated fadeInUp valign" />
+</header>
+<div class="content">
   <div class="text animated fadeIn">
     <div class="row" id="intro">
-      <h5>Introduction</h5>
+      <a href="#intro" class="black-text"><h5>Introduction</h5></a>
       <p>pwnup is a utility to automate pwntools clients.</p>
     </div>
     <div class="row" id="examples">
-      <h5>Examples</h5>
+      <a href="#examples" class="black-text"><h5>Examples</h5></a>
       <p>TBD</p>
     </div>
     <div class="row" id="install">
-      <h5>Install</h5>
+      <a href="#install" class="black-text"><h5>Install</h5></a>
       <p>pip install pwnup</p>
     </div>
     <div class="row" id="source">
-      <h5>Source</h5>
+      <a href="#source" class="black-text"><h5>Source</h5></a>
       <p><a class="blue-text text-darken-2" href="http://github.com/vitapluvia/pwnup/">GitHub</a></p>
     </div>
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+<script>
+  $("li a").on("click", function() {
+    $("li a").removeClass("active");
+		$(this).addClass("active");
+	});
+
+  //var options = [
+  //  {selector: '.content', offset: 250, callback: function() {
+  //    $("li a").removeClass("active");
+  //    $("li a.intro").addClass("active");
+  //  }},
+  //  {selector: '.content', offset: 850, callback: function() {
+  //    $("li a").removeClass("active");
+  //    $("li a.examples").addClass("active");
+  //  }},
+  //  {selector: '.content', offset: 1250, callback: function() {
+  //    $("li a").removeClass("active");
+  //    $("li a.install").addClass("active");
+  //  }},
+  //  {selector: '.content', offset: 1205, callback: function() {
+  //  }},
+  //];
+  //Materialize.scrollFire(options);
+      
+</script>
 </body>
 </html>
 
