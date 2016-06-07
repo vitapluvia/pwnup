@@ -1,5 +1,6 @@
 <html>
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
@@ -14,7 +15,7 @@
     margin: 0 auto;
   }
   .table-of-contents {
-    margin-top: 34px;
+    margin-top: 200px;
 		background: #121212;
     padding: 14px 24px;
 		border-radius: 0 4px 4px 0;
@@ -22,18 +23,61 @@
     padding-left: 15px;
     position: fixed;
   }
+  .content {
+    margin-top: 40px;
+    margin-left: 190px;
+    margin-bottom: 700px;
+  }
+  h4 {
+    font-weight: 600;
+  }
+  p {
+    background: #DEDEDE;
+    border-radius: 4px;
+    padding: 14px;
+    max-width: 590px;
+  }
+  .text {
+    margin-top: 50px;
+    -webkit-animation-delay: 0.7s;
+  }
+  .row {
+    margin-top: 35px;
+  }
 </style>
 </head>
 <body>
-  <div class="pwnup-logo">
-    <img src="./pwnup.png" class="pwnup-logo animated fadeInUp" />
+
+<ul class="section table-of-contents animated fadeIn">
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#examples">Examples</a></li>
+  <li><a href="#install">Install</a></li>
+  <li><a href="#source">Source Code</a></li>
+</ul>
+
+<div class="container valign-wrapper">
+</div>
+<div class="content">
+  <img src="./pwnup.png" class="pwnup-logo animated fadeInUp valign" />
+  <div class="text animated fadeIn">
+    <div class="row" id="intro">
+      <h5>Introduction</h5>
+      <p>pwnup is a utility to automate pwntools clients.</p>
+    </div>
+    <div class="row" id="examples">
+      <h5>Examples</h5>
+      <p>TBD</p>
+    </div>
+    <div class="row" id="install">
+      <h5>Install</h5>
+      <p>pip install pwnup</p>
+    </div>
+    <div class="row" id="source">
+      <h5>Source</h5>
+      <p><a class="blue-text text-darken-2" href="http://github.com/vitapluvia/pwnup/">GitHub</a></p>
+    </div>
   </div>
-  <ul class="section table-of-contents animated fadeIn">
-    <li><a href="#">Introduction</a></li>
-    <li><a href="#">Examples</a></li>
-    <li><a href="#">Install</a></li>
-    <li><a href="#">Source Code</a></li>
-  </ul>
+</div>
 </body>
 </html>
 
