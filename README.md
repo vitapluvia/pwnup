@@ -17,8 +17,9 @@
 
 - Run `pwnup` (optionally pass host & port if working with a remote server.)
 - Select type of client
-- After finished interacting, press `ctrl-d`/`ctrl-c` to end the session.
+- After finished interacting, press `ctrl-d` to end the session.
 - It will drop a `client.py` file in the current directory.
+- More examples can be found here: [http://vitapluvia.github.io/pwnup/#examples](http://vitapluvia.github.io/pwnup/#examples)
 
 ### Description:
 
