@@ -2,7 +2,12 @@
 
 # pwnup
 
+
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/pwnup.svg)](https://pypi.python.org/pypi/pwnup)
+[![Python version](https://img.shields.io/pypi/pyversions/pwnup.svg)](https://pypi.python.org/pypi/pwnup)
+[![Twitter](https://img.shields.io/badge/twitter-fadec0d3-4099FF.svg)](https://twitter.com/fadec0d3)
+
 
 ### Installation:
 
