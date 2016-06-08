@@ -108,6 +108,7 @@
       <a href="#examples" class="black-text"><h4>Examples</h4></a>
 
 <ul class="collapsible popout" data-collapsible="accordion">
+
 <li>
 <div class="collapsible-header"><i class="material-icons">subtitles</i>OverTheWire's Bandit0 <span class="spoiler red-text">[ SPOILERS ]</span></div>
 <div class="collapsible-body">
@@ -198,8 +199,110 @@ if __name__ == "__main__":
 </div>
 </li>
 
-</ul>
+<li>
+<div class="collapsible-header"><i class="material-icons">subtitles</i>Google Banner Grab</div>
+<div class="collapsible-body">
+<pre>Simple <a href="http://www.google.com/">www.google.com</a> banner grab:</pre>
+<pre class="code"><code class="language-javascript">$ pwnup
+[*] Running PwnUp 1.0.5
+ [?] Choose a type.
+       1) ssh
+    2> 2) remote
+       3) local
+[*] You Chose: remote
+host > www.google.com
+port > 80
+[+] Opening connection to www.google.com on port 80: Done
+[*] Press <Ctrl-D> to stop recording ...
+[*] Switching to interactive mode
+$ HEAD / HTTP/1.1
+$
+HTTP/1.1 200 OK
+Date: Wed, 08 Jun 2016 01:06:53 GMT
+Expires: -1
+Cache-Control: private, max-age=0
+Content-Type: text/html; charset=ISO-8859-1
+Server: gws
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Transfer-Encoding: chunked
+Accept-Ranges: none
+Vary: Accept-Encoding
+$
+[*] Client Written to client.py
+[*] Closed connection to www.google.com port 80
+</code></pre>
 
+<pre>Generated client from session:</pre>
+<pre class="code"><code class="language-javascript">#!/usr/bin/env python
+from pwn import *
+
+r = remote('www.google.com', 80)
+
+def main():
+  r.send('HEAD / HTTP/1.1\n')
+  r.send('\n')
+  print(r.recvuntil(' none\r\nVary: Accept-Encoding\r\n\r\n'))
+  r.send('\n')
+
+if __name__ == "__main__":
+  main()
+</code></pre>
+</li>
+
+<li>
+<div class="collapsible-header"><i class="material-icons">subtitles</i>Local Shell Example</div>
+<div class="collapsible-body">
+<pre>Local bash run:</pre>
+<pre class="code"><code class="language-javascript">$ pwnup
+
+[*] Running PwnUp 1.0.5
+ [?] Choose a type.
+       1) ssh
+       2) remote
+    => 3) local
+[*] You Chose: local
+binary > bash
+[+] Started program 'bash'
+[*] Press <Ctrl-D> to stop recording ...
+[*] Switching to interactive mode
+$ ls -la
+total 16
+drwx------ 2 ubuntu ubuntu 4096 Jun  8 01:23 .
+drwxrwxrwt 5 root   root   4096 Jun  8 01:23 ..
+-rw-r--r-- 1 ubuntu ubuntu    5 Jun  8 01:23 secrets
+-rwxr-xr-x 1 ubuntu ubuntu   17 Jun  8 01:23 shell
+$ whoami
+ubuntu
+$ cat secrets
+1234
+$ 
+[*] Client Written to client.py
+[*] Stopped program 'bash'
+</code></pre>
+
+<pre>Generated client from session:</pre>
+<pre class="code"><code class="language-javascript">#!/usr/bin/env python
+from pwn import *
+
+r = process('bash')
+
+def main():
+  r.send('ls -la\n')
+  print(r.recvuntil(' ubuntu   17 Jun  8 01:23 shell\n'))
+  r.send('whoami\n')
+  print(r.recvuntil('ubuntu\n'))
+  r.send('cat secrets\n')
+  print(r.recvuntil('1234\n'))
+
+if __name__ == "__main__":
+  main()
+</code></pre>
+
+
+</li>
+
+</ul>
     </div>
     <div class="section scrollspy" id="source">
       <a href="#source" class="black-text"><h4>Source</h4></a>
