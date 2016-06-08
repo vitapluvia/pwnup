@@ -4,6 +4,8 @@
   <meta name="description" content="The autoexpect of pwntools" />
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism-twilight.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
       background: #FDFDFD;
@@ -35,7 +37,7 @@
     h4 {
       font-weight: 600;
     }
-		h5:hover::before {
+		h4:hover::before {
 			content: ">";
 			position: absolute;
       font-weight: 600;
@@ -49,6 +51,20 @@
       border-radius: 4px;
       padding: 14px;
       max-width: 590px;
+    }
+    pre, .collapsible {
+      width: 590px;
+    }
+    .collapsible-body {
+      padding: 0 16px;
+    }
+    pre.code {
+      width: 550px;
+    }
+    .spoiler {
+      font-size: 12px;
+      font-weight: 100;
+      margin-left: 8px;
     }
     .text {
       margin-top: 50px;
@@ -81,19 +97,116 @@
 <div class="content">
   <div class="text animated fadeIn">
     <div class="section scrollspy" id="intro">
-      <a href="#intro" class="black-text"><h5>Introduction</h5></a>
+      <a href="#intro" class="black-text"><h4>Introduction</h4></a>
       <p>pwnup is a utility to automate pwntools clients.</p>
     </div>
     <div class="section scrollspy" id="install">
-      <a href="#install" class="black-text"><h5>Install</h5></a>
+      <a href="#install" class="black-text"><h4>Install</h4></a>
       <p>pip install pwnup</p>
     </div>
     <div class="section scrollspy" id="examples">
-      <a href="#examples" class="black-text"><h5>Examples</h5></a>
-      <p>TBD</p>
+      <a href="#examples" class="black-text"><h4>Examples</h4></a>
+
+<ul class="collapsible popout" data-collapsible="accordion">
+<li>
+<div class="collapsible-header"><i class="material-icons">subtitles</i>OverTheWire's Bandit0 <span class="spoiler red-text">[ SPOILERS ]</span></div>
+<div class="collapsible-body">
+<pre>Simple <a href="http://overthewire.org/wargames/bandit/bandit0.html">Bandit0</a> example pwnup session:</pre>
+<pre class="code"><code class="language-javascript">$ pwnup bandit.labs.overthewire.org 22
+
+[*] Running PwnUp 1.0.5
+ [?] Choose a type.
+    1> 1) ssh
+       2) remote
+       3) local
+[*] You Chose: ssh
+user > bandit0
+password > bandit0
+cmd > cat readme
+[+] Connecting to bandit.labs.overthewire.org on port 22: Done
+[+] Opening new channel: 'cat readme': Done
+[*] Press <Ctrl-D> to stop recording ...
+[*] Switching to interactive mode
+boJ9jbbUNNfktd78OOpsqOltutMc3MY1
+[*] Got EOF while reading in interactive
+$
+[*] Closed SSH channel with bandit.labs.overthewire.org
+[*] Got EOF while sending in interactive
+[*] Client Written to client.py
+</code></pre>
+
+<pre>Generated client from session:</pre>
+<pre class="code"><code class="language-javascript">$ cat ./client.py
+
+#!/usr/bin/env python
+from pwn import *
+
+sh = ssh(host='bandit.labs.overthewire.org', user='bandit0', password='bandit0', port=22)
+r = sh.run('cat readme')
+
+def main():
+  print(r.recvuntil('oJ9jbbUNNfktd78OOpsqOltutMc3MY1\n'))
+
+if __name__ == "__main__":
+  main()
+</code></pre>
+
+</div>
+</li>
+
+<li>
+<div class="collapsible-header"><i class="material-icons">subtitles</i>Pwnable.kr's fd <span class="spoiler red-text">[ SPOILERS ]</span></div>
+<div class="collapsible-body">
+<pre>Pwnable.kr <a href="http://pwnable.kr/play.php">fd</a> example session:</pre>
+<pre class="code"><code class="language-javascript">$ pwnup pwnable.kr 2222
+
+[*] Running PwnUp 1.0.5
+ [?] Choose a type.
+    1> 1) ssh
+       2) remote
+       3) local
+[*] You Chose: ssh
+user > fd
+password > guest
+cmd > ./fd 4660
+[+] Connecting to pwnable.kr on port 2222: Done
+[+] Opening new channel: './fd 4660': Done
+[*] Press <Ctrl-D> to stop recording ...
+[*] Switching to interactive mode
+$ LETMEWIN
+mommy! I think I know what a file descriptor is!!
+good job :)
+[*] Got EOF while reading in interactive
+$
+[*] Closed SSH channel with pwnable.kr
+[*] Got EOF while sending in interactive
+[*] Client Written to client.py</code></pre>
+
+<pre>Generated client from session:</pre>
+<pre class="code"><code class="language-javascript">$ cat ./client.py
+
+#!/usr/bin/env python
+from pwn import *
+
+sh = ssh(host='pwnable.kr', user='fd', password='guest', port=2222)
+r = sh.run('./fd 4660')
+
+def main():
+  r.send('LETMEWIN\n')
+  print(r.recvuntil('ile descriptor is!!\ngood job :)\n'))
+
+if __name__ == "__main__":
+  main()
+</code></pre>
+
+</div>
+</li>
+
+</ul>
+
     </div>
     <div class="section scrollspy" id="source">
-      <a href="#source" class="black-text"><h5>Source</h5></a>
+      <a href="#source" class="black-text"><h4>Source</h4></a>
       <p><a class="btn-flat github waves-effect waves white" href="http://github.com/vitapluvia/pwnup/">GitHub</a></p>
     </div>
   </div>
@@ -101,6 +214,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.js"></script>
 <script>
 $(document).ready(function(){
   $('.toc-wrapper').pushpin({
@@ -108,7 +222,11 @@ $(document).ready(function(){
     bottom: 950
   });
 	$(".scrollspy").scrollSpy()
+  $('.collapsible').collapsible({
+    //accordion : false
+  });
 });
+
 
 </script>
 </body>
