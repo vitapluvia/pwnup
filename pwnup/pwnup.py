@@ -77,7 +77,7 @@ class PwnUp():
       return "r = remote('{}', {})".format(host, port)
     if types[v] == "local":
       binary = raw_input("binary > ") or "ls"
-      return "r = process('{}')".format(binary)
+      return "r = process('{}', shell=True)".format(binary)
     if types[v] == "ssh":
       host = host or raw_input("host > ") or "localhost"
       port = port or raw_input("port > ") or 22

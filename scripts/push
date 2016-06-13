@@ -1,0 +1,6 @@
+#!/bin/bash
+rm -rf dist build pwnup.egg-info && \
+  python setup.py sdist && \
+  python setup.py bdist_wheel && \
+  twine register dist/*.whl && \
+  twine upload dist/*
