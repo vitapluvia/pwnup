@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import version
 
@@ -8,6 +9,17 @@ try:
 except Exception as e:
   print("pwntools must be installed: pip install pwntools")
   sys.exit(1)
+
+DEBUG = 0
+
+try:
+  if os.environ.get('PWN_DEBUG'):
+    DEBUG = 1
+except:
+  pass
+
+def debug(value):
+  if DEBUG: print value
 
 # Grab only the last N bytes instead of the exact match for recv's:
 LAST_BYTES = 32
@@ -71,23 +83,29 @@ class PwnUp():
     types = ["ssh", "remote", "local"]
     v = options("Choose a type.", types)
     log.info("You Chose: {}".format(types[v]))
+
+    command = ""
+
     if types[v] == "remote":
-      host = host or raw_input("host > ") or "localhost"
-      port = port or raw_input("port > ") or "4444"
-      return "r = remote('{}', {})".format(host, port)
-    if types[v] == "local":
-      binary = raw_input("binary > ") or "ls"
-      return "r = process('{}', shell=True)".format(binary)
-    if types[v] == "ssh":
-      host = host or raw_input("host > ") or "localhost"
-      port = port or raw_input("port > ") or 22
-      user = raw_input("user > ") or ""
-      password = raw_input("password > ") or ""
-      cmd = raw_input("cmd > ") or "ls"
+      host = host or raw_input("host > ").strip("\n") or "localhost"
+      port = port or raw_input("port > ").strip("\n") or "4444"
+      command = "r = remote('{}', {})".format(host, port)
+    elif types[v] == "local":
+      binary = raw_input("binary > ").strip("\n") or "ls"
+      command = "r = process('{}')".format(binary)
+    elif types[v] == "ssh":
+      host = host or raw_input("host > ").strip("\n") or "localhost"
+      port = port or raw_input("port > ").strip("\n") or 22
+      user = raw_input("user > ").strip("\n") or ""
+      password = raw_input("password > ").strip("\n") or ""
+      cmd = raw_input("cmd > ").strip("\n") or "ls"
       sshCmd = "sh = ssh(host='{}', user='{}', password='{}', port={})\n".format(
           host, user, password, int(port))
       sshCmd += "r = sh.run('{}')".format(cmd)
-      return sshCmd
+      command = sshCmd
+
+    debug("Command: {}".format(repr(command)))
+    return command
 
   def saveFile(self, connection, interaction):
     client = open(self.filename, "w")
@@ -107,6 +125,12 @@ class PwnUp():
     ioType = tup[0]
     value = tup[1]
 
+    debug("I/O Type: {}".format(ioType))
+    debug("I/O Value: {}".format(value))
+
+    if "Switching to interactive mode" in value:
+      return ""
+
     if (ioType == 0):
       return r"  r.send({})".format(repr(value))
     else:
@@ -119,10 +143,11 @@ class PwnUp():
     self.stubIO()
     r.interactive()
     self.restoreIO()
-    for tup in self.all_io[1:]:
+    debug("All I/O: {}".format(self.all_io))
+    for tup in self.all_io:
       result += "{}\n".format(self.getIOString(tup))
 
-    return result
+    return result or '  pass\n'
 
   def checkArgs(self):
     host = ""
@@ -150,4 +175,3 @@ def start():
 
 if __name__ == "__main__":
   start()
-
